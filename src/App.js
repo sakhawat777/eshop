@@ -5,7 +5,7 @@ import {Home, Contact} from './pages/index';
 // For components
 import { Header, Footer} from './components/index';
 
-
+ 
 
 function App() {
   return (
