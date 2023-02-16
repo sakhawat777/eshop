@@ -3,6 +3,10 @@ import { Link, NavLink } from 'react-router-dom';
 import styles from './Header.module.scss';
 import { FaShoppingCart, FaTimes } from 'react-icons/fa';
 import { HiOutlineMenuAlt3} from 'react-icons/hi';
+import { signOut } from "firebase/auth";
+import { auth } from '../../firebase/config';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 
 const logo = (
@@ -27,17 +31,26 @@ const cart = (
 const activeLink = 
     ({isActive}) => 
     (isActive? `${styles.active}` : "")  
-
     
 
 const Header = () => {
     const [showMenu, setShowMenu] = useState(false);
+    const navigate = useNavigate()
 
     const toggleMenu = () => {
         setShowMenu(!showMenu);
     }
     const hideMenu = () => {
         setShowMenu(false);
+    }
+
+    const logOutUser = () => {
+        signOut(auth).then(() => {
+            toast.success("Logout Successfully.");
+            navigate('/')
+          }).catch((error) => {
+            toast.error(error.message);
+          });
     }
     
         
@@ -65,6 +78,7 @@ const Header = () => {
                     <NavLink to="/login" className={activeLink}>Login</NavLink>
                     <NavLink to="/register" className={activeLink}>Register</NavLink>
                     <NavLink to="/order-history" className={activeLink}>My Orders</NavLink>
+                    <NavLink to="/" onClick={logOutUser}>Logout</NavLink>
                 </span>
                     {cart}
             </div>
