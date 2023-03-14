@@ -7,6 +7,8 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from '../../firebase/config';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { SET_ACTIVE_USER } from '../../redux/slice/authSlice';
 
 
 const logo = (
@@ -36,16 +38,31 @@ const activeLink =
 const Header = () => {
     const [showMenu, setShowMenu] = useState(false);
     const [displayName, setDisplayName] = useState("");
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
+    const dispatch = useDispatch()
 
 // Monitor currently sign in user
     useEffect(() => {
         // Get the currently signed-in user
         onAuthStateChanged(auth, (user) => {
           if (user) {
-            const uid = user.uid;
-            console.log(user.displayName)
-            setDisplayName(user.displayName)
+            // const uid = user.uid;
+            if(user.displayName == null){
+                const u1 = user.email.slice(0, -10)
+                const uName = u1.charAt(0).toUpperCase() + u1.slice(1)
+                // console.log(uName)
+                setDisplayName(uName)
+            }
+            else {
+                setDisplayName(user.displayName)
+            }
+            
+            dispatch(SET_ACTIVE_USER({
+                email: user.email,
+                userName: user.displayName ? user.displayName : displayName,
+                userID: user.uid,
+              }))
           } else {
             // User is signed out
             setDisplayName("")
